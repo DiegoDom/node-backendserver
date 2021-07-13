@@ -1,0 +1,57 @@
+{
+    "workbench.startupEditor": "newUntitledFile",
+    "editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.minimap.enabled": false,
+    "explorer.confirmDelete": false,
+    "workbench.colorTheme": "Default Dark+",
+    "editor.fontLigatures": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "liveServer.settings.donotShowInfoMsg": true,
+    "bracket-pair-colorizer-2.colors": [
+        "#fafafa",
+        "#9F51B6",
+        "#F7C244",
+        "#F07850",
+        "#9CDD29",
+        "#C497D4"
+    ],
+    "typescript.validate.enable": true,
+    "angular.experimental-ivy": true,
+    "editor.linkedEditing": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "emmet.triggerExpansionOnTab": true,
+    "blade.format.enable": true,
+    "workbench.activityBar.visible": false,
+    "cSpell.userWords": [
+        "heroid"
+    ],
+    "activitusbar.alignment": "Left",
+    "activitusbar.views": [
+
+        {
+            "name": "explorer",
+            "codicon": "explorer-view-icon"
+        },
+        {
+            "name": "search",
+            "codicon": "search-view-icon"
+        },
+        {
+            "name": "scm",
+            "codicon": "source-control-view-icon"
+        },
+        {
+            "name": "debug",
+            "codicon": "run-view-icon"
+        },
+        {
+            "name": "extensions",
+            "codicon": "extensions-view-icon"
+        }
+    ],
+    "workbench.sideBar.location": "left",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "editor.tabSize": 4,
+    "security.workspace.trust.untrustedFiles": "open"
+}
