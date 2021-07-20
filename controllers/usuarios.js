@@ -1,7 +1,9 @@
 const { response } = require('express');
-const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
 
 const Usuario = require('../models/usuario');
+const { generarJWT } = require('../helpers/jwt');
 
 const getUsuarios = async(req, res) => {
 
@@ -15,15 +17,7 @@ const getUsuarios = async(req, res) => {
 
 const crearUsuario = async(req, res = response) => {
 
-    const { email, password, nombre } = req.body;
-
-    const errores = validationResult(req);
-    if (!errores.isEmpty()) {
-        res.status(400).json({
-            ok: false,
-            errors: errores.mapped()
-        });
-    }
+    const { email, password } = req.body;
 
     try {
 
@@ -37,11 +31,21 @@ const crearUsuario = async(req, res = response) => {
         }
 
         const usuario = new Usuario(req.body);
+
+        /* Encriptar contraseña */
+        const salt = bcrypt.genSaltSync();
+        usuario.password = bcrypt.hashSync(password, salt);
+
+        /* Guardar usuario */
         await usuario.save();
+
+        /* Generar un JWT */
+        const token = await generarJWT(usuario.id);
 
         res.json({
             ok: true,
-            usuario
+            usuario,
+            token
         });
 
     } catch (error) {
@@ -51,9 +55,103 @@ const crearUsuario = async(req, res = response) => {
             msg: 'Error inesperado... revisar logs'
         });
     }
+};
+
+const actualizarUsuario = async(req, res = response) => {
+
+    /* Validar token y verificar si es el usuario correcto */
+    const uid = req.params.id;
+    
+    try {
+        
+        const isValid = await validarUsuario(uid);
+
+        if (!isValid) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'No existe un usuario con ese id'
+            });
+        }
+        
+        const { password, google , email, ...campos } = req.body;
+        
+        if (usuarioDB.email !== email) {
+            const existEmail = await Usuario.findOne({ email });
+        
+            if (existEmail) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'Ya existe un usuario con ese email...'
+                });
+            }
+        }
+
+        campos.email = email;
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
+
+        res.json({
+            ok: true,
+            usuario: usuarioActualizado
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... revisar logs'
+        });
+    }
+};
+
+const borrarUsuario = async(req, res = response) => {
+    
+    /* Validar token */
+    const uid = req.params.id;
+    
+    try {
+
+        const isValid = await validarUsuario(uid);
+
+        if (!isValid) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'No existe un usuario con ese id'
+            });
+        }
+
+        await Usuario.findByIdAndDelete(uid);
+
+        res.json({
+            ok: true,
+            msg: 'usuario eliminado'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... revisar logs'
+        });
+    }
+};
+
+const validarUsuario = async(uid) => {
+    
+    if (!mongoose.Types.ObjectId.isValid(uid)) {
+       return false;
+    }
+
+    const usuarioDB = await Usuario.findById(uid);
+    if (!usuarioDB) {
+        return false;
+    }
+
+    return true;
 }
 
 module.exports = {
     getUsuarios,
-    crearUsuario
+    crearUsuario,
+    actualizarUsuario,
+    borrarUsuario
 };
